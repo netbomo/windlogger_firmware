@@ -8,9 +8,11 @@
 #ifndef FSM_H_
 #define FSM_H_
 
-//#define DEBUG_FSM
+#define DEBUG_FSM
 
 #include "Arduino.h"
+
+#include "Rtc_Pcf8563.h"
 
 class FSM;
 
@@ -24,6 +26,8 @@ class FSM {
 public:
 	FSM();
 	virtual ~FSM();
+
+	void init();
 
 	/******************************************************************************
 	 * State pointer
@@ -43,7 +47,7 @@ public:
 	inline void ev_isWaiting(){
 		nextState = &FSM::st_SLEEP;
 #ifdef DEBUG_FSM
-		Serial.println("----ev_isWaiting");
+		//Serial.println("----ev_isWaiting");
 #endif
 	}
 
@@ -96,6 +100,7 @@ public:
 	/******************************************************************************
 	 * Configuration management
 	 ******************************************************************************/
+	inline void addChar(char ch){serialString[serialStrIndex]=ch;serialStrIndex++;}
 	/**
 	 * The config methods permit to update private members
 	 * @param stringConfig This string contain the ID parameter and the value as "id=value"
@@ -107,6 +112,16 @@ public:
 	 * The printConfig method print all parameters and values on Serial (uart0)
 	 */
 	void printConfig();
+
+	void configDT(char *stringConfig);
+
+	/**
+	 *
+	 */
+	void printDateTime();
+
+
+	void FSM::timingControl();
 
 
 	/******************************************************************************
@@ -132,13 +147,34 @@ public:
 
 private:
 	/******************************************************************************
+	 * params saved in eeprom
+	 ******************************************************************************/
+	const unsigned char DATA_STRUCTURE_VERSION = 201;
+	unsigned long structure_version;		/**< This permit to improve the structure by auto reset eeprom data when the structure evolve to prevent data bad reading */
+	unsigned char node_id;				/**< The node id, permit identify each datalogger (0 - 255)*/
+	unsigned char measure_sample_conf;	/**< Measurement sampling (0: no measure, 1 : 10 secs, 2: 1 min, 3: 10 min...) */
+	unsigned char measure_max;			/**< Measure_max is the number of measure by measure_sample_conf (ex by minute or by 10 minutes...). !Be careful! is a new configuration is create, the Sensor::MAX_DATA_SAMPLE needs to be adjust to the highest value of measure_max! */
+
+	/******************************************************************************
 	 * Private FSM members
 	 ******************************************************************************/
-	unsigned char measure_max = 4;
+	unsigned char m_eeprom_addr;
+	unsigned char isInConfig = 0;
+	unsigned char measure;				/**< This counter organize measurement */
+	unsigned char second_old;			/**< For timing comparison,check if need to make measurement */
+	unsigned char second_counter;
 
-	unsigned char measure = 0;
+	unsigned char measure_periode;		/**< Measure_periode is the interval between two measures in seconds */
 
 
+	char serialString[64]={'a'};
+	unsigned char serialStrIndex=0;
+
+
+	/******************************************************************************
+	 * Hardware interface
+	 ******************************************************************************/
+	Rtc_Pcf8563 rtc;	// create RTC instance
 };
 
 #endif /* FSM_H_ */
