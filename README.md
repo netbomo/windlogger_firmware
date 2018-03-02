@@ -1,1 +1,0 @@
-# windlogger_firmware
