@@ -9,28 +9,70 @@
 #include "Arduino.h"
 #include "FSM.h"
 
+/******************************************************************************
+ * Constructor and destructor definition
+ */
+FSM::FSM() {}	// FSM constructor
 
-bool FSM::flag_configRequest = false;
-bool FSM::flag_frequenciesReady = false;
-bool FSM::flag_measure = false;
+FSM::~FSM() {}	// FSM destructor
 
-FSM::FSM() {
-	// TODO Auto-generated constructor stub
+/******************************************************************************
+ * Public flags
+ */
+bool FSM::flag_configRequest = false;			/**< initialize the flag_configRequest to false */
+bool FSM::flag_frequenciesReady = false;		/**< initialize the flag_frequenciesReady to false */
+bool FSM::flag_measure = false;					/**< initialize the flag_measure to false */
 
-}
-
-FSM::~FSM() {
-	// TODO Auto-generated destructor stub
-}
-
+/******************************************************************************
+ * State machine mechanic methods
+ */
+// this method initialize the FSM
 void FSM::init(){
-	m_eeprom_addr = 0;
-	nextState = &FSM::st_SETUP;
+	m_eeprom_addr = 0;				// data are store from the 0 adress
+	nextState = &FSM::st_SETUP;		// the first state is : st_setup
 
-	load_param();	// load FSM param from EEPROM
+	load_param();					// load FSM param from EEPROM
 
-	rtc.getDateTime();	// upload date and time from the RTC
+	rtc.getDateTime();				// upload date and time from the RTC
 
+}
+
+void FSM::timingControl(){
+	// update local variables
+	rtc.getTime();
+
+	if(secondOld!=rtc.getSecond()){				// is it a new second ?
+		second_counter++;						// Use a second counter to compare with the measurePeriode
+
+		if((second_counter%measurePeriode)==0)
+		{
+			flag_measure = true;				// if it's true, we can do a new measure
+			second_counter=0;					// reset the counter
+		}
+	secondOld = rtc.getSecond();		// update timestamp_old
+	}
+}
+
+/******************************************************************************
+ * Configuration management
+ ******************************************************************************/
+void FSM::menu(){
+	Serial.println("Configuration menu :");
+	Serial.println("	$1 - FSM");
+	Serial.println("	$2 - Date/Time");
+	Serial.println("	$3 - Anemo");
+}
+
+void FSM::printConfig(){
+	Serial.println("FSM config stuff :");
+	Serial.print("	*11 measure_sample_conf = ");	Serial.print(measureSampleConf);	Serial.println("		0: not measure,1: 10s average,2:1min average,3:10min average.");
+	Serial.print("	*12 node id = ");	Serial.print(node_id);	Serial.println("		permit identify each datalogger (0 - 255).");
+}
+
+void FSM::printDateTime(){
+	Serial.println("Date/Time config :");
+	Serial.print("	*21 Time : ");	Serial.println(rtc.formatTime());
+	Serial.print("	*22 Date : ");	Serial.println(rtc.formatDate());
 }
 
 bool FSM::config(char *stringConfig){
@@ -42,19 +84,19 @@ bool FSM::config(char *stringConfig){
 		case 1:	// choose measurement periode parameter
 			switch (arg_uc) {
 			case 0:	// no measurement, use at the first wake up
-				measure_sample_conf = 0;measure_max = 0;measure_periode = 0;
+				measureSampleConf = 0;measureMax = 0;measurePeriode = 0;
 				update_param();	measure = 0; second_counter = 0;
 				break;
 			case 1:	// Config 1 : 2 measures in 10 secondes
-				measure_sample_conf = 1;measure_max = 2;measure_periode = 5;
+				measureSampleConf = 1;measureMax = 2;measurePeriode = 5;
 				update_param();	measure = 0; second_counter = 0;
 				break;
 			case 2:	// Config 2 : 4 measures in 1 minute
-				measure_sample_conf = 2;measure_max = 4;measure_periode = 15;
+				measureSampleConf = 2;measureMax = 4;measurePeriode = 15;
 				update_param();	measure = 0; second_counter = 0;
 				break;
 			case 3:	// Config 3 : 10 measures in 10 minutes
-				measure_sample_conf = 3;measure_max = 10;measure_periode = 60;
+				measureSampleConf = 3;measureMax = 10;measurePeriode = 60;
 				update_param();	measure = 0; second_counter = 0;
 				break;
 			default:
@@ -71,12 +113,6 @@ bool FSM::config(char *stringConfig){
 	}
 
 	return 0;
-}
-
-void FSM::printConfig(){
-	Serial.println("FSM config stuff :");
-	Serial.print("	*11 measure_sample_conf = ");	Serial.print(measure_sample_conf);	Serial.println("		0: not measure,1: 10s average,2:1min average,3:10min average.");
-	Serial.print("	*12 node id = ");	Serial.print(node_id);	Serial.println("		permit identify each datalogger (0 - 255).");
 }
 
 void FSM::configDT(char *stringConfig){
@@ -98,7 +134,7 @@ void FSM::configDT(char *stringConfig){
 			else Serial.print("Bad value : type *21=hh:mm:ss");
 			break;
 		case 2://	*22=mm/dd/yyyy
-			if(stringConfig[6]=='/'&&stringConfig[9]=='/'){	// test time separator
+			if(stringConfig[6]=='/'&&stringConfig[9]=='/'){	// test date separator
 				char months[3]={stringConfig[4],stringConfig[5],'\0'};
 				char days[3]={stringConfig[7],stringConfig[8],'\0'};
 				char years[3]={stringConfig[12],stringConfig[13],'\0'};
@@ -113,68 +149,34 @@ void FSM::configDT(char *stringConfig){
 	}
 }
 
-
-void FSM::printDateTime(){
-	Serial.println("Date/Time config :");
-	Serial.print("	*21 Time : ");	Serial.println(rtc.formatTime());
-	Serial.print("	*22 Date : ");	Serial.println(rtc.formatDate());
-}
-
-void FSM::timingControl(){
-	// If a new second comes
-	FSM::rtc.getTime();
-
-	unsigned char tempSec = rtc.getSecond();
-	if(second_old!=tempSec){
-		second_counter++;						// Use a second counter to compare with the measure_stamp
-Serial.print(second_counter);	Serial.print("	");	Serial.println(measure_periode);
-		if((second_counter%measure_periode)==0)
-		{
-			flag_measure = 1;				// if it's true, we can do a new measure
-			second_counter=0;					// reset the counter
-			Serial.print("Flag_measure = 1");
-		}
-	second_old = tempSec;		// update timestamp_old
-	}
-}
-
+/******************************************************************************
+ * State list declaration
+ */
 void FSM::st_SETUP(){
 #ifdef DEBUG_FSM
 	Serial.println("st_SETUP");
 #endif
 
-	digitalWrite(LED_BUILTIN,HIGH);			// led off
-	delay(1000);
-	digitalWrite(LED_BUILTIN,LOW);
-
 	// by default the transition is ev_waiting
 	ev_isWaiting();
 }
 
-void display(){
-	Serial.println("Configuration menu :");
-	Serial.println("	$1 - FSM");
-	Serial.println("	$2 - Date/Time");
-	Serial.println("	$3 - Anemo");
-}
-
 void FSM::st_CONFIG(){
+
 #ifdef DEBUG_FSM
 	Serial.println("st_CONFIG");
 #endif
 
 	if(flag_configRequest==true){
-
-		Serial.println(serialStrIndex);
 		Serial.println(serialString);
 
 		switch (serialString[0]) {
 			case '$':
-				// display config
+				// menu config
 				switch (serialString[1]) {
 					case '$':
 						isInConfig = 1;		// set config menu index to main
-						display();
+						menu();
 						break;
 					case '1':
 						printConfig();
@@ -209,7 +211,7 @@ void FSM::st_CONFIG(){
 				Serial.println("Bad request");
 				break;
 		}
-		serialStrIndex=0;
+		StrIndex=0;
 		flag_configRequest = false;
 
 		if(!(serialString[0]=='$' && serialString[1]=='q' ))	//if request is not quit
@@ -220,6 +222,7 @@ void FSM::st_CONFIG(){
 	// Transition test ?
 	if(flag_configRequest || isInConfig>0) ev_configRequest();
 	else ev_isWaiting();	// by default the transition is ev_waiting
+
 }
 
 void FSM::st_SLEEP(){
@@ -237,6 +240,7 @@ void FSM::st_SLEEP(){
 
 
 void FSM::st_MEASURE(){
+
 #ifdef DEBUG_FSM
 	Serial.println("st_MEASURE");
 #endif
@@ -298,9 +302,9 @@ void FSM::load_param(){
 	if(structure_version != DATA_STRUCTURE_VERSION) initialize_param();
 	else{
 		node_id = eeprom_read_byte((const unsigned char*)m_eeprom_addr+5);
-		measure_sample_conf = eeprom_read_byte((const unsigned char*)m_eeprom_addr+7);
-		measure_max = eeprom_read_byte((const unsigned char*)m_eeprom_addr+9);
-		measure_periode = eeprom_read_byte((const unsigned char*)m_eeprom_addr+11);
+		measureSampleConf = eeprom_read_byte((const unsigned char*)m_eeprom_addr+7);
+		measureMax = eeprom_read_byte((const unsigned char*)m_eeprom_addr+9);
+		measurePeriode = eeprom_read_byte((const unsigned char*)m_eeprom_addr+11);
 	}
 }
 
@@ -308,9 +312,9 @@ void FSM::load_param(){
 void FSM::update_param (){
 	eeprom_update_byte((unsigned char*)m_eeprom_addr, structure_version);
 	eeprom_update_byte((unsigned char*)m_eeprom_addr+5, node_id);
-	eeprom_update_byte((unsigned char*)m_eeprom_addr+7, measure_sample_conf);
-	eeprom_update_byte((unsigned char*)m_eeprom_addr+9, measure_max);
-	eeprom_update_byte((unsigned char*)m_eeprom_addr+11, measure_periode);
+	eeprom_update_byte((unsigned char*)m_eeprom_addr+7, measureSampleConf);
+	eeprom_update_byte((unsigned char*)m_eeprom_addr+9, measureMax);
+	eeprom_update_byte((unsigned char*)m_eeprom_addr+11, measurePeriode);
 }
 
 // Initialize the eeprom memory
@@ -323,4 +327,3 @@ void FSM::initialize_param (){
 
 	load_param();
 }
-

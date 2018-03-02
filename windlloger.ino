@@ -9,7 +9,7 @@ void setup()
 {
 // Add your initialization code here
 	Serial.begin(9600);
-	Serial.println("Initialization");
+	Serial.println("Initialization windlogger v0.2");
 	pinMode(LED_BUILTIN,OUTPUT);			// initialize the LED_BUILDING as output (pin 13)
 	digitalWrite(LED_BUILTIN,LOW);			// led off
 	fsm.init();
@@ -28,27 +28,27 @@ void loop()
 	// Serial input processing
 	while (Serial.available())
 	 {
-		char ch=Serial.read();
+		char ch=Serial.read();		// copy the char in ch
 	 switch(ch)
 	   {
-	   case '\r':
+	   case '\r':					// if carriage return, pull-up the flag.confgRequest flag
 #ifdef DEBUG_MAIN
 		   Serial.print("CR");
 #endif
 	     fsm.flag_configRequest = true;
 	     break;
-	   case '\n':
+	   case '\n':					// if it's new line, just do nothing
 		  //
-	     break; // ignore
+	     break;
 	   default:
 #ifdef DEBUG_MAIN
 		   Serial.print(ch);
 #endif
-	     fsm.addChar(ch);	// add char to config request
+	     fsm.addChar(ch);			// else, add char to the configRequest
 	   }
 	 }
 
-	// check timing
+	// Check timing :
 #ifdef DEBUG_MAIN
 		   Serial.print("check timing");
 #endif
