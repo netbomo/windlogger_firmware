@@ -1,6 +1,6 @@
 \mainpage Windlogger firmware v0.5
 
-##Introduction
+## Introduction
 
 This is is the documentation on the windlogger firmware.
 
