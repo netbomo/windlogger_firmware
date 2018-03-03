@@ -9,11 +9,16 @@ void setup()
 {
 // Add your initialization code here
 	Serial.begin(9600);
-	Serial.println("Initialization windlogger v0.2");
+	Serial.println("Initialization windlogger v0.5");
 	pinMode(LED_BUILTIN,OUTPUT);			// initialize the LED_BUILDING as output (pin 13)
 	digitalWrite(LED_BUILTIN,LOW);			// led off
 	fsm.init();
 
+
+	TCCR3A = 0;
+	TCCR3B = 0;
+	TCCR3C = 0;
+	TIMSK3 = 0;
 }
 
 // The loop function is called in an endless loop
@@ -23,7 +28,7 @@ void loop()
 	//Serial.println("Main function...");
 #endif
 
-//Add your repeated code here
+////Add your repeated code here
 	// hardware management
 	// Serial input processing
 	while (Serial.available())
@@ -53,7 +58,6 @@ void loop()
 		   Serial.print("check timing");
 #endif
 	fsm.timingControl ();	// check if time comes to do a new measure or not
-
 
 
 	// execute state, each next state is decide in the current state

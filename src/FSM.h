@@ -39,6 +39,7 @@
 #include "Arduino.h"
 
 #include "Rtc_Pcf8563.h"
+#include "SD.h"
 
 class FSM;
 
@@ -107,7 +108,7 @@ public:
 	inline void addChar(char ch){	serialString[StrIndex]=ch;	StrIndex++;	}
 
 	/// This method print the main menu
-	void FSM::menu();
+	void menu();
 	/**
 	 * The config method permit to update private members
 	 * @param stringConfig This string contain the ID parameter and the value as "id=value"
@@ -126,8 +127,14 @@ public:
 	 */
 	void configDT(char *stringConfig);
 
-	/// Thismethod print the date and the time on the serial(uart0)
+	/// This method print the date and the time on the serial(uart0)
 	void printDateTime();
+
+
+	/// Print output configuration
+	void printOutput();
+
+	void configOutput(char *stringConfig);
 
 	/******************************************************************************
 	 * FSM parameters in EEPROM management
@@ -161,15 +168,21 @@ private:
 	unsigned char second_counter;		/**< The second_counter is used to compare to the measurePeriode interval */
 	unsigned char measurePeriode;		/**< measurePeriode is the interval between two measures in seconds */
 
+	unsigned long timestamp;			/**< save timestamp at each average to print on output */
 
 	char serialString[64]={'a'};		/**< This string is used for character test and is pass to the config state when a '\r' char comes */
 	unsigned char StrIndex=0;			/**< This is serialString index */
+
+	// output config flags
+	bool serial_enable;					/**< set to true, to write data on Serial */
+	bool sd_enable;						/**< set to true, to write data on SD card */
 
 
 	/******************************************************************************
 	 * Hardware interface
 	 ******************************************************************************/
 	Rtc_Pcf8563 rtc;					/**< Real Time Clock instance */
-};
+	SDClass sd;
+	};
 
 #endif /* FSM_H_ */

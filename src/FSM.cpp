@@ -1,18 +1,55 @@
-/*
- * FSM.cpp
+/**
+ *******************************************************************************
+ *******************************************************************************
  *
- *  Created on: 19 févr. 2018
- *      Author: gilou
+ *	License :
+ *    This program is free software: you can redistribute it and/or modify
+ *    it under the terms of the GNU General Public License as published by
+ *    the Free Software Foundation, either version 3 of the License, or
+ *     any later version.
+ *
+ *    This program is distributed in the hope that it will be useful,
+ *    but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *    GNU General Public License for more details.
+ *
+ *    You should have received a copy of the GNU General Public License
+ *    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *
+ *******************************************************************************
+ *******************************************************************************
+ *
+ *
+ *    @file   FSM.h
+ *    @author gilou
+ *    @date   19 févr. 2018
+ *    @brief  The FSM is the finish state machine mechanism.
+ *
+ *    This is the Final State Machine organization
+ *
  */
 
 
 #include "Arduino.h"
 #include "FSM.h"
 
+#include "Rtc_Pcf8563.h"
+#include "Anemometer.h"
+#include "SD.h"
+
+
+Anemometer anemo1(0);
+Anemometer anemo2(1);
+
 /******************************************************************************
  * Constructor and destructor definition
  */
-FSM::FSM() {}	// FSM constructor
+FSM::FSM() {
+
+
+}	// FSM constructor
+
 
 FSM::~FSM() {}	// FSM destructor
 
@@ -35,6 +72,9 @@ void FSM::init(){
 
 	rtc.getDateTime();				// upload date and time from the RTC
 
+	anemo1.load_param();
+	anemo2.load_param();
+
 }
 
 void FSM::timingControl(){
@@ -46,11 +86,16 @@ void FSM::timingControl(){
 
 		if((second_counter%measurePeriode)==0)
 		{
+			//Serial.print(measurePeriode); Serial.println("new measure");
 			flag_measure = true;				// if it's true, we can do a new measure
 			second_counter=0;					// reset the counter
 		}
 	secondOld = rtc.getSecond();		// update timestamp_old
 	}
+
+	// get anemo flag value
+	flag_frequenciesReady = anemo1.flag_anemo();
+	//Serial.print(anemo1.flag_anemo());
 }
 
 /******************************************************************************
@@ -60,12 +105,15 @@ void FSM::menu(){
 	Serial.println("Configuration menu :");
 	Serial.println("	$1 - FSM");
 	Serial.println("	$2 - Date/Time");
-	Serial.println("	$3 - Anemo");
+	Serial.println("	$3 - Anemo1");
+	Serial.println("	$4 - Anemo2");
+
+	Serial.println("	$9 - Output configuration");
 }
 
 void FSM::printConfig(){
 	Serial.println("FSM config stuff :");
-	Serial.print("	*11 measure_sample_conf = ");	Serial.print(measureSampleConf);	Serial.println("		0: not measure,1: 10s average,2:1min average,3:10min average.");
+	Serial.print("	*11 measure_sample_conf = ");	Serial.print(measureSampleConf);	Serial.println("		0: no measure,1: 10s average,2:1min average,3:10min average.");
 	Serial.print("	*12 node id = ");	Serial.print(node_id);	Serial.println("		permit identify each datalogger (0 - 255).");
 }
 
@@ -149,6 +197,40 @@ void FSM::configDT(char *stringConfig){
 	}
 }
 
+
+void FSM::configOutput(char *stringConfig){
+	uint8_t item = stringConfig[2]-'0';	// convert item in char
+
+	double arg_f = atof(stringConfig + 4);	// convert the second part, the value in double to cover all possibilities.
+	unsigned char arg_uc = (unsigned char)arg_f;
+	switch (item) {
+		case 1:	// enable or disable write data on Serial
+			if(arg_uc==0)serial_enable = false;	// disable
+			else serial_enable = true;				// enable
+			update_param();
+		break;
+		case 2:	// enable or disable write data on SD card
+			if(arg_uc==0)sd_enable = false;	// disable
+			else sd_enable = true;				// enable
+			update_param();
+			break;
+//			case 3:	// Set offset value
+//				m_offset = arg_f;
+//				update_param();
+//				break;
+		default:
+			Serial.print("Bad request : ");Serial.println(item);
+	}
+}
+
+void FSM::printOutput(){
+	Serial.println("Output config :");
+	Serial.print("	*91 Serial enable : ");	Serial.println(serial_enable);
+	Serial.print("	*92 Sd card enable : ");	Serial.println(sd_enable);
+
+
+}
+
 /******************************************************************************
  * State list declaration
  */
@@ -156,6 +238,12 @@ void FSM::st_SETUP(){
 #ifdef DEBUG_FSM
 	Serial.println("st_SETUP");
 #endif
+
+
+//	Serial.print("TCCR3A	"); Serial.println(TCCR3A);
+//	Serial.print("TCCR3B	"); Serial.println(TCCR3B);
+//	Serial.print("TCCR3C	"); Serial.println(TCCR3C);
+
 
 	// by default the transition is ev_waiting
 	ev_isWaiting();
@@ -184,11 +272,24 @@ void FSM::st_CONFIG(){
 					case '2':
 						printDateTime();
 						break;
+					case '3':
+						anemo1.print_config();
+						break;
+					case '4':
+						anemo2.print_config();
+						break;
+
+
+					case '9':
+					printOutput();
+					break;
 					case 'q':
-						Serial.println("Config Doneand start measurement.");
+						Serial.println("Config Done and start measurement.");
 						isInConfig = 0;	// go out menu and config
+						measure = 0; second_counter = 0;	// reset measure
 						break;
 					default:
+						Serial.println("Bad request");
 						break;
 				}
 				break;
@@ -203,7 +304,21 @@ void FSM::st_CONFIG(){
 						configDT(serialString);
 						printDateTime();
 						break;
+					case '3':
+						anemo1.config(serialString);
+						anemo1.print_config();
+						break;
+					case '4':
+						anemo2.config(serialString);
+						anemo2.print_config();
+						break;
+
+					case '9':
+						configOutput(serialString);
+						printOutput();
+						break;
 					default:
+						Serial.println("Bad request");
 						break;
 				}
 				break;
@@ -233,24 +348,28 @@ void FSM::st_SLEEP(){
 
 	// Transition test ?
 	if(flag_configRequest) ev_configRequest();
-	else if(flag_measure) ev_measure();
+	else if(flag_measure) {
+		ev_measure();
+	}
 	else if(flag_frequenciesReady)ev_frequenciesReady();
 	else ev_isWaiting();	// by default the transition is ev_waiting
 }
-
 
 void FSM::st_MEASURE(){
 
 #ifdef DEBUG_FSM
 	Serial.println("st_MEASURE");
 #endif
-	Serial.println("st_MEASURE");
-	digitalWrite(LED_BUILTIN,HIGH);			// led off
-	delay(500);
+	digitalWrite(LED_BUILTIN,HIGH);			// led on
+
+	anemo1.start();							// start anemo1 and 2
+
+
 	digitalWrite(LED_BUILTIN,LOW);
 
 	// reset the flag
 	flag_measure = false;
+	measure++;				// increase measure
 
 	// Transition test ?
 	if(flag_configRequest) ev_configRequest();
@@ -263,6 +382,10 @@ void FSM::st_READ_FREQUENCIES(){
 	Serial.println("st_READ_FREQUENCIES");
 #endif
 
+	anemo1.read_value(measure);
+	anemo2.read_value(measure);
+
+	flag_frequenciesReady = false;
 
 	// Transition test ?
 	if(flag_configRequest) ev_configRequest();
@@ -274,7 +397,17 @@ void FSM::st_CALC_AVERAGES(){
 	Serial.println("st_CALC_AVERAGES");
 #endif
 
+	// test measure number, if equal measureMax, it's time to made average
 	bool isMeasureMax = false;
+	if(measure == measureMax){
+		isMeasureMax = true;
+
+		anemo1.calc_average(measureMax);
+		anemo2.calc_average(measureMax);
+
+		timestamp = rtc.getTimestamp();	// save average's timestamp
+		measure = 0;	// restart a new sequence
+	}
 
 	// Transition test ?
 	if(flag_configRequest) ev_configRequest();
@@ -287,6 +420,58 @@ void FSM::st_OUTPUT(){
 	Serial.println("st_OUTPUT");
 #endif
 	bool isTransmitting = true;
+
+	if(serial_enable==true){
+
+		// print on Serial (uart 0)
+		Serial.print(timestamp); Serial.print(" ");
+		Serial.print(node_id); Serial.print(" ");
+		Serial.print(anemo1.get_average()); Serial.print(" ");
+		Serial.print(anemo2.get_average()); Serial.print(" ");
+
+		Serial.println();
+	}
+
+	if(sd_enable==true){
+char tempString[12];
+		char dataString[200];
+
+		strcpy(dataString, ltoa(timestamp, tempString, 10)); strcat(dataString,"	");
+		strcat(dataString,itoa(node_id, tempString, 10)); strcat(dataString,"	");
+		strcat(dataString,dtostrf(anemo1.get_average(), 1, 1, tempString)); strcat(dataString,"	");
+		strcat(dataString,dtostrf(anemo2.get_average(), 1, 1, tempString)); strcat(dataString,"	");
+
+
+		unsigned char SD_cs = 7;
+		Serial.print("Initializing SD card...");
+		pinMode(10, OUTPUT);						// be sure to set SS as output
+		pinMode(SD_cs, OUTPUT);							// be sure to set CD_cs as output
+
+		if (SD.begin(SD_cs)) {
+			Serial.println("card initialized.");
+
+			// open the file. note that only one file can be open at a time,
+			// so you have to close this one before opening another.
+			File dataFile = SD.open("datalog.txt", FILE_WRITE);
+
+			// if the file is available, write to it:
+			if (dataFile) {
+			dataFile.println(dataString);
+			dataFile.close();
+			// print to the serial port too:
+			Serial.println(dataString);
+			}
+			// if the file isn't open, pop up an error:
+			else {
+			Serial.println("error opening datalog.txt");
+			}
+
+		}
+		Serial.println("Card failed, or not present");
+
+	}
+
+	isTransmitting = false;
 
 	// Transition test ?
 	if(isTransmitting) ev_transmitting();
@@ -305,6 +490,12 @@ void FSM::load_param(){
 		measureSampleConf = eeprom_read_byte((const unsigned char*)m_eeprom_addr+7);
 		measureMax = eeprom_read_byte((const unsigned char*)m_eeprom_addr+9);
 		measurePeriode = eeprom_read_byte((const unsigned char*)m_eeprom_addr+11);
+
+		if(eeprom_read_byte((const unsigned char*)m_eeprom_addr+13)==0) serial_enable = false;
+		else serial_enable = true;
+		if(eeprom_read_byte((const unsigned char*)m_eeprom_addr+15)==0) sd_enable = false;
+		else sd_enable = true;
+
 	}
 }
 
@@ -315,15 +506,23 @@ void FSM::update_param (){
 	eeprom_update_byte((unsigned char*)m_eeprom_addr+7, measureSampleConf);
 	eeprom_update_byte((unsigned char*)m_eeprom_addr+9, measureMax);
 	eeprom_update_byte((unsigned char*)m_eeprom_addr+11, measurePeriode);
+
+	if(serial_enable==false) eeprom_update_byte((unsigned char*)m_eeprom_addr+13, 0);	// store 0 for false
+	else eeprom_update_byte((unsigned char*)m_eeprom_addr+13, 1);						// store 1 for true
+	if(sd_enable==false) eeprom_update_byte((unsigned char*)m_eeprom_addr+15, 0);	// store 0 for false
+	else eeprom_update_byte((unsigned char*)m_eeprom_addr+15, 1);						// store 1 for true
+
 }
 
 // Initialize the eeprom memory
 void FSM::initialize_param (){
 	eeprom_update_byte((unsigned char*)m_eeprom_addr, DATA_STRUCTURE_VERSION);
-	eeprom_update_byte((unsigned char*)m_eeprom_addr+5, 0);
+	eeprom_update_byte((unsigned char*)m_eeprom_addr+5, 15);
 	eeprom_update_byte((unsigned char*)m_eeprom_addr+7, 0);
 	eeprom_update_byte((unsigned char*)m_eeprom_addr+9, 0);
-	eeprom_update_byte((unsigned char*)m_eeprom_addr+9, 15);
+	eeprom_update_byte((unsigned char*)m_eeprom_addr+11, 0);
+	eeprom_update_byte((unsigned char*)m_eeprom_addr+13, 1);
+	eeprom_update_byte((unsigned char*)m_eeprom_addr+15, 0);
 
 	load_param();
 }
