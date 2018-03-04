@@ -75,6 +75,8 @@ void FSM::init(){
 	anemo1.load_param();
 	anemo2.load_param();
 
+	sd_init = false;
+
 }
 
 void FSM::timingControl(){
@@ -433,7 +435,8 @@ void FSM::st_OUTPUT(){
 	}
 
 	if(sd_enable==true){
-char tempString[12];
+		// todo improve with SD card detection, SD_CD on pin 3
+		char tempString[12];
 		char dataString[200];
 
 		strcpy(dataString, ltoa(timestamp, tempString, 10)); strcat(dataString,"	");
@@ -441,33 +444,43 @@ char tempString[12];
 		strcat(dataString,dtostrf(anemo1.get_average(), 1, 1, tempString)); strcat(dataString,"	");
 		strcat(dataString,dtostrf(anemo2.get_average(), 1, 1, tempString)); strcat(dataString,"	");
 
+		if(sd_init==false){	// if sd is not initialize, do it
+			Serial.print("Initializing SD card...");
+			// make sure that the default chip select pin is set to
+			// output, even if you don't use it:
+			pinMode(10, OUTPUT);
 
-		unsigned char SD_cs = 7;
-		Serial.print("Initializing SD card...");
-		pinMode(10, OUTPUT);						// be sure to set SS as output
-		pinMode(SD_cs, OUTPUT);							// be sure to set CD_cs as output
+			// see if the card is present and can be initialized:
+			if (!SD.begin(SD_CS)) {
+			Serial.println("Card failed, or not present");
+			// don't do anything more:
+			sd_init=false;
+			}
+			else {
+				Serial.println("card initialized.");
+				sd_init = true;
+			}
+		}
 
-		if (SD.begin(SD_cs)) {
-			Serial.println("card initialized.");
-
+		if(sd_init==true)	// sd card is initialize, write on
+		{
+			/// todo improve name  is date
 			// open the file. note that only one file can be open at a time,
 			// so you have to close this one before opening another.
-			File dataFile = SD.open("datalog.txt", FILE_WRITE);
+			File dataFile = SD.open("windlog3.txt", FILE_WRITE);
 
 			// if the file is available, write to it:
 			if (dataFile) {
 			dataFile.println(dataString);
 			dataFile.close();
 			// print to the serial port too:
-			Serial.println(dataString);
+			//Serial.println(dataString);
 			}
 			// if the file isn't open, pop up an error:
 			else {
 			Serial.println("error opening datalog.txt");
 			}
-
 		}
-		Serial.println("Card failed, or not present");
 
 	}
 
