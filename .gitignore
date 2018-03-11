@@ -36,6 +36,4 @@ Release/
 
 
 # don't add doxygen repo and doxyfile
-docs/
-
-*.doxyfile
+html/
