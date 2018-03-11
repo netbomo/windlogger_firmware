@@ -184,6 +184,7 @@ private:
 	Rtc_Pcf8563 rtc;					/**< Real Time Clock instance */
 	SDClass sd;
 
+
 	bool sd_init;
 	const unsigned char SD_CS = 7;
 	};

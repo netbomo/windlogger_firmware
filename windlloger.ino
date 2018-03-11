@@ -9,7 +9,7 @@ void setup()
 {
 // Add your initialization code here
 	Serial.begin(9600);
-	Serial.println("Initialization windlogger v0.5.2");
+	Serial.println("Initialization windlogger v0.5.3");
 	pinMode(LED_BUILTIN,OUTPUT);			// initialize the LED_BUILDING as output (pin 13)
 	digitalWrite(LED_BUILTIN,LOW);			// led off
 	fsm.init();

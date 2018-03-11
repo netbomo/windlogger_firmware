@@ -34,13 +34,17 @@
 #include "Arduino.h"
 #include "FSM.h"
 
+// hardware include
 #include "Rtc_Pcf8563.h"
-#include "Anemometer.h"
 #include "SD.h"
 
+// sensor include
+#include "Anemometer.h"
+#include "Windvane.h"
 
-Anemometer anemo1(0);
-Anemometer anemo2(1);
+Anemometer anemo1(0);	// Anemo1 is collected in the timer0
+Anemometer anemo2(1);	// Anemo2 is collected in the timer1
+Windvane vane(6);		// The windvane is connected to the ADC6
 
 /******************************************************************************
  * Constructor and destructor definition
@@ -74,6 +78,8 @@ void FSM::init(){
 
 	anemo1.load_param();
 	anemo2.load_param();
+
+	vane.load_param();
 
 	sd_init = false;
 
@@ -109,6 +115,7 @@ void FSM::menu(){
 	Serial.println("	$2 - Date/Time");
 	Serial.println("	$3 - Anemo1");
 	Serial.println("	$4 - Anemo2");
+	Serial.println("	$5 - Windvane");
 
 	Serial.println("	$9 - Output configuration");
 }
@@ -241,12 +248,6 @@ void FSM::st_SETUP(){
 	Serial.println("st_SETUP");
 #endif
 
-
-//	Serial.print("TCCR3A	"); Serial.println(TCCR3A);
-//	Serial.print("TCCR3B	"); Serial.println(TCCR3B);
-//	Serial.print("TCCR3C	"); Serial.println(TCCR3C);
-
-
 	// by default the transition is ev_waiting
 	ev_isWaiting();
 }
@@ -280,7 +281,9 @@ void FSM::st_CONFIG(){
 					case '4':
 						anemo2.print_config();
 						break;
-
+					case '5':
+						vane.print_config();
+						break;
 
 					case '9':
 					printOutput();
@@ -313,6 +316,10 @@ void FSM::st_CONFIG(){
 					case '4':
 						anemo2.config(serialString);
 						anemo2.print_config();
+						break;
+					case '5':
+						vane.config(serialString);
+						vane.print_config();
 						break;
 
 					case '9':
@@ -366,8 +373,10 @@ void FSM::st_MEASURE(){
 
 	anemo1.start();							// start anemo1 and 2
 
+	vane.read_value(measure);				// read the windvane value
 
-	digitalWrite(LED_BUILTIN,LOW);
+
+	digitalWrite(LED_BUILTIN,LOW);			// led off
 
 	// reset the flag
 	flag_measure = false;
@@ -406,9 +415,14 @@ void FSM::st_CALC_AVERAGES(){
 
 		anemo1.calc_average(measureMax);
 		anemo2.calc_average(measureMax);
+		vane.calc_average(measureMax);
 
 		timestamp = rtc.getTimestamp();	// save average's timestamp
 		measure = 0;	// restart a new sequence
+
+		anemo1.clear(measureMax);
+		anemo2.clear(measureMax);
+		vane.clear(measureMax);
 	}
 
 	// Transition test ?
@@ -430,6 +444,7 @@ void FSM::st_OUTPUT(){
 		Serial.print(node_id); Serial.print(" ");
 		Serial.print(anemo1.get_average()); Serial.print(" ");
 		Serial.print(anemo2.get_average()); Serial.print(" ");
+		Serial.print(vane.get_average());	Serial.print("	");
 
 		Serial.println();
 	}
@@ -443,6 +458,8 @@ void FSM::st_OUTPUT(){
 		strcat(dataString,itoa(node_id, tempString, 10)); strcat(dataString,"	");
 		strcat(dataString,dtostrf(anemo1.get_average(), 1, 1, tempString)); strcat(dataString,"	");
 		strcat(dataString,dtostrf(anemo2.get_average(), 1, 1, tempString)); strcat(dataString,"	");
+		strcat(dataString,dtostrf(vane.get_average(), 1, 1, tempString)); strcat(dataString,"	");
+
 
 		if(sd_init==false){	// if sd is not initialize, do it
 			Serial.print("Initializing SD card...");

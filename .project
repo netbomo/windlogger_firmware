@@ -39,22 +39,27 @@
 		<link>
 			<name>core/variant</name>
 			<type>2</type>
-			<location>/home/gilou/Documents/Arduino/hardware/mighty-1284p/avr/variants/windlogger</location>
+			<location>/home/gilou/Arduino/hardware/mighty-1284p/avr/variants/windlogger</location>
 		</link>
 		<link>
 			<name>libraries/Anemometer</name>
 			<type>2</type>
-			<location>/home/gilou/Documents/Arduino/libraries/Anemometer</location>
+			<location>/home/gilou/Arduino/libraries/Anemometer</location>
 		</link>
 		<link>
 			<name>libraries/Rtc_Pcf8563</name>
 			<type>2</type>
-			<location>/home/gilou/Documents/Arduino/libraries/Rtc_Pcf8563</location>
+			<location>/home/gilou/Arduino/libraries/Rtc_Pcf8563</location>
 		</link>
 		<link>
 			<name>libraries/SD</name>
 			<type>2</type>
-			<location>/home/gilou/Documents/Arduino/hardware/mighty-1284p/avr/libraries/SD</location>
+			<location>/home/gilou/Arduino/hardware/mighty-1284p/avr/libraries/SD</location>
+		</link>
+		<link>
+			<name>libraries/Windvane</name>
+			<type>2</type>
+			<location>/home/gilou/Arduino/libraries/Windvane</location>
 		</link>
 		<link>
 			<name>libraries/Wire</name>
