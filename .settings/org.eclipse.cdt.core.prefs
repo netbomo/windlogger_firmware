@@ -67,7 +67,7 @@ environment/project/io.sloeber.core.toolChain.release.1669488660/A.BUILD.USB_MAN
 environment/project/io.sloeber.core.toolChain.release.1669488660/A.BUILD.USB_MANUFACTURER/value="Unknown"
 environment/project/io.sloeber.core.toolChain.release.1669488660/A.BUILD.VARIANT.PATH/delimiter=\:
 environment/project/io.sloeber.core.toolChain.release.1669488660/A.BUILD.VARIANT.PATH/operation=replace
-environment/project/io.sloeber.core.toolChain.release.1669488660/A.BUILD.VARIANT.PATH/value=/home/gilou/Arduino/hardware/mighty-1284p/avr/variants/windlogger
+environment/project/io.sloeber.core.toolChain.release.1669488660/A.BUILD.VARIANT.PATH/value=/home/gilou/Documents/Arduino/hardware/mighty-1284p/avr/variants/windlogger
 environment/project/io.sloeber.core.toolChain.release.1669488660/A.BUILD.VARIANT/delimiter=\:
 environment/project/io.sloeber.core.toolChain.release.1669488660/A.BUILD.VARIANT/operation=replace
 environment/project/io.sloeber.core.toolChain.release.1669488660/A.BUILD.VARIANT/value=windlogger
@@ -160,13 +160,13 @@ environment/project/io.sloeber.core.toolChain.release.1669488660/A.ESP8266.NETWO
 environment/project/io.sloeber.core.toolChain.release.1669488660/A.ESP8266.NETWORK.UPLOAD.TOOL/value=esp8266OTA
 environment/project/io.sloeber.core.toolChain.release.1669488660/A.EXTRA.TIME.DTS/delimiter=\:
 environment/project/io.sloeber.core.toolChain.release.1669488660/A.EXTRA.TIME.DTS/operation=replace
-environment/project/io.sloeber.core.toolChain.release.1669488660/A.EXTRA.TIME.DTS/value=0
+environment/project/io.sloeber.core.toolChain.release.1669488660/A.EXTRA.TIME.DTS/value=3600
 environment/project/io.sloeber.core.toolChain.release.1669488660/A.EXTRA.TIME.LOCAL/delimiter=\:
 environment/project/io.sloeber.core.toolChain.release.1669488660/A.EXTRA.TIME.LOCAL/operation=replace
-environment/project/io.sloeber.core.toolChain.release.1669488660/A.EXTRA.TIME.LOCAL/value=1520789694
+environment/project/io.sloeber.core.toolChain.release.1669488660/A.EXTRA.TIME.LOCAL/value=1525959659
 environment/project/io.sloeber.core.toolChain.release.1669488660/A.EXTRA.TIME.UTC/delimiter=\:
 environment/project/io.sloeber.core.toolChain.release.1669488660/A.EXTRA.TIME.UTC/operation=replace
-environment/project/io.sloeber.core.toolChain.release.1669488660/A.EXTRA.TIME.UTC/value=1520786094
+environment/project/io.sloeber.core.toolChain.release.1669488660/A.EXTRA.TIME.UTC/value=1525952459
 environment/project/io.sloeber.core.toolChain.release.1669488660/A.EXTRA.TIME.ZONE/delimiter=\:
 environment/project/io.sloeber.core.toolChain.release.1669488660/A.EXTRA.TIME.ZONE/operation=replace
 environment/project/io.sloeber.core.toolChain.release.1669488660/A.EXTRA.TIME.ZONE/value=3600
@@ -205,13 +205,13 @@ environment/project/io.sloeber.core.toolChain.release.1669488660/A.RECIPE.AR.PAT
 environment/project/io.sloeber.core.toolChain.release.1669488660/A.RECIPE.AR.PATTERN/value="${A.COMPILER.PATH}${A.COMPILER.AR.CMD}" ${A.COMPILER.AR.FLAGS} ${A.COMPILER.AR.EXTRA_FLAGS} "${A.ARCHIVE_FILE_PATH}" "${A.OBJECT_FILE}"
 environment/project/io.sloeber.core.toolChain.release.1669488660/A.RECIPE.C.COMBINE.PATTERN.1/delimiter=\:
 environment/project/io.sloeber.core.toolChain.release.1669488660/A.RECIPE.C.COMBINE.PATTERN.1/operation=replace
-environment/project/io.sloeber.core.toolChain.release.1669488660/A.RECIPE.C.COMBINE.PATTERN.1/value="/home/gilou/Logiciels/sloeber//arduinoPlugin/packages/arduino/tools/avr-gcc/4.9.2-atmel3.5.4-arduino2/bin/avr-gcc" -Wall -Wextra -Os -g -flto -fuse-linker-plugin -Wl,--gc-sections -mmcu\=atmega1284p -o "/home/gilou/git-repos/windlogger_firmware/Release/windlogger_firmware.elf" 
+environment/project/io.sloeber.core.toolChain.release.1669488660/A.RECIPE.C.COMBINE.PATTERN.1/value="/home/gilou/Logiciels/sloeber//arduinoPlugin/packages/arduino/tools/avr-gcc/4.9.2-atmel3.5.4-arduino2/bin/avr-gcc" -Wall -Wextra -Os -g -flto -fuse-linker-plugin -Wl,--gc-sections -mmcu\=atmega1284p -o "/home/gilou/Git/windlogger_firmware/Release/windlogger.elf" 
 environment/project/io.sloeber.core.toolChain.release.1669488660/A.RECIPE.C.COMBINE.PATTERN.2/delimiter=\:
 environment/project/io.sloeber.core.toolChain.release.1669488660/A.RECIPE.C.COMBINE.PATTERN.2/operation=replace
 environment/project/io.sloeber.core.toolChain.release.1669488660/A.RECIPE.C.COMBINE.PATTERN.2/value=\ 
 environment/project/io.sloeber.core.toolChain.release.1669488660/A.RECIPE.C.COMBINE.PATTERN.3/delimiter=\:
 environment/project/io.sloeber.core.toolChain.release.1669488660/A.RECIPE.C.COMBINE.PATTERN.3/operation=replace
-environment/project/io.sloeber.core.toolChain.release.1669488660/A.RECIPE.C.COMBINE.PATTERN.3/value=\ "-L/home/gilou/git-repos/windlogger_firmware/Release" -lm
+environment/project/io.sloeber.core.toolChain.release.1669488660/A.RECIPE.C.COMBINE.PATTERN.3/value=\ "-L/home/gilou/Git/windlogger_firmware/Release" -lm
 environment/project/io.sloeber.core.toolChain.release.1669488660/A.RECIPE.C.COMBINE.PATTERN/delimiter=\:
 environment/project/io.sloeber.core.toolChain.release.1669488660/A.RECIPE.C.COMBINE.PATTERN/operation=replace
 environment/project/io.sloeber.core.toolChain.release.1669488660/A.RECIPE.C.COMBINE.PATTERN/value="${A.COMPILER.PATH}${A.COMPILER.C.ELF.CMD}" ${A.COMPILER.C.ELF.FLAGS} -mmcu\=${A.BUILD.MCU} ${A.COMPILER.C.ELF.EXTRA_FLAGS} -o "${A.BUILD.PATH}/${A.BUILD.PROJECT_NAME}.elf" ${A.OBJECT_FILES} "${A.BUILD.PATH}/${A.ARCHIVE_FILE}" "-L${A.BUILD.PATH}" -lm
@@ -241,13 +241,13 @@ environment/project/io.sloeber.core.toolChain.release.1669488660/A.RECIPE.CPP.O.
 environment/project/io.sloeber.core.toolChain.release.1669488660/A.RECIPE.CPP.O.PATTERN/value="${A.COMPILER.PATH}${A.COMPILER.CPP.CMD}" ${A.COMPILER.CPP.FLAGS} -mmcu\=${A.BUILD.MCU} -DF_CPU\=${A.BUILD.F_CPU} -DARDUINO\=${A.RUNTIME.IDE.VERSION} -DARDUINO_${A.BUILD.BOARD} -DARDUINO_ARCH_${A.BUILD.ARCH} ${A.COMPILER.CPP.EXTRA_FLAGS} ${A.BUILD.EXTRA_FLAGS} ${A.INCLUDES} "${A.SOURCE_FILE}" -o "${A.OBJECT_FILE}"
 environment/project/io.sloeber.core.toolChain.release.1669488660/A.RECIPE.OBJCOPY.EEP.PATTERN.1/delimiter=\:
 environment/project/io.sloeber.core.toolChain.release.1669488660/A.RECIPE.OBJCOPY.EEP.PATTERN.1/operation=replace
-environment/project/io.sloeber.core.toolChain.release.1669488660/A.RECIPE.OBJCOPY.EEP.PATTERN.1/value="/home/gilou/Logiciels/sloeber//arduinoPlugin/packages/arduino/tools/avr-gcc/4.9.2-atmel3.5.4-arduino2/bin/avr-objcopy" -O ihex -j .eeprom --set-section-flags\=.eeprom\=alloc,load --no-change-warnings --change-section-lma .eeprom\=0 "/home/gilou/git-repos/windlogger_firmware/Release/windlogger_firmware.elf" "/home/gilou/git-repos/windlogger_firmware/Release/windlogger_firmware.eep"
+environment/project/io.sloeber.core.toolChain.release.1669488660/A.RECIPE.OBJCOPY.EEP.PATTERN.1/value="/home/gilou/Logiciels/sloeber//arduinoPlugin/packages/arduino/tools/avr-gcc/4.9.2-atmel3.5.4-arduino2/bin/avr-objcopy" -O ihex -j .eeprom --set-section-flags\=.eeprom\=alloc,load --no-change-warnings --change-section-lma .eeprom\=0 "/home/gilou/Git/windlogger_firmware/Release/windlogger.elf" "/home/gilou/Git/windlogger_firmware/Release/windlogger.eep"
 environment/project/io.sloeber.core.toolChain.release.1669488660/A.RECIPE.OBJCOPY.EEP.PATTERN/delimiter=\:
 environment/project/io.sloeber.core.toolChain.release.1669488660/A.RECIPE.OBJCOPY.EEP.PATTERN/operation=replace
 environment/project/io.sloeber.core.toolChain.release.1669488660/A.RECIPE.OBJCOPY.EEP.PATTERN/value="${A.COMPILER.PATH}${A.COMPILER.OBJCOPY.CMD}" ${A.COMPILER.OBJCOPY.EEP.FLAGS} ${A.COMPILER.OBJCOPY.EEP.EXTRA_FLAGS} "${A.BUILD.PATH}/${A.BUILD.PROJECT_NAME}.elf" "${A.BUILD.PATH}/${A.BUILD.PROJECT_NAME}.eep"
 environment/project/io.sloeber.core.toolChain.release.1669488660/A.RECIPE.OBJCOPY.HEX.PATTERN.1/delimiter=\:
 environment/project/io.sloeber.core.toolChain.release.1669488660/A.RECIPE.OBJCOPY.HEX.PATTERN.1/operation=replace
-environment/project/io.sloeber.core.toolChain.release.1669488660/A.RECIPE.OBJCOPY.HEX.PATTERN.1/value="/home/gilou/Logiciels/sloeber//arduinoPlugin/packages/arduino/tools/avr-gcc/4.9.2-atmel3.5.4-arduino2/bin/avr-objcopy" -O ihex -R .eeprom "/home/gilou/git-repos/windlogger_firmware/Release/windlogger_firmware.elf" "/home/gilou/git-repos/windlogger_firmware/Release/windlogger_firmware.hex"
+environment/project/io.sloeber.core.toolChain.release.1669488660/A.RECIPE.OBJCOPY.HEX.PATTERN.1/value="/home/gilou/Logiciels/sloeber//arduinoPlugin/packages/arduino/tools/avr-gcc/4.9.2-atmel3.5.4-arduino2/bin/avr-objcopy" -O ihex -R .eeprom "/home/gilou/Git/windlogger_firmware/Release/windlogger.elf" "/home/gilou/Git/windlogger_firmware/Release/windlogger.hex"
 environment/project/io.sloeber.core.toolChain.release.1669488660/A.RECIPE.OBJCOPY.HEX.PATTERN/delimiter=\:
 environment/project/io.sloeber.core.toolChain.release.1669488660/A.RECIPE.OBJCOPY.HEX.PATTERN/operation=replace
 environment/project/io.sloeber.core.toolChain.release.1669488660/A.RECIPE.OBJCOPY.HEX.PATTERN/value="${A.COMPILER.PATH}${A.COMPILER.ELF2HEX.CMD}" ${A.COMPILER.ELF2HEX.FLAGS} ${A.COMPILER.ELF2HEX.EXTRA_FLAGS} "${A.BUILD.PATH}/${A.BUILD.PROJECT_NAME}.elf" "${A.BUILD.PATH}/${A.BUILD.PROJECT_NAME}.hex"
@@ -277,7 +277,7 @@ environment/project/io.sloeber.core.toolChain.release.1669488660/A.RECIPE.S.O.PA
 environment/project/io.sloeber.core.toolChain.release.1669488660/A.RECIPE.S.O.PATTERN/value="${A.COMPILER.PATH}${A.COMPILER.C.CMD}" ${A.COMPILER.S.FLAGS} -mmcu\=${A.BUILD.MCU} -DF_CPU\=${A.BUILD.F_CPU} -DARDUINO\=${A.RUNTIME.IDE.VERSION} -DARDUINO_${A.BUILD.BOARD} -DARDUINO_ARCH_${A.BUILD.ARCH} ${A.COMPILER.S.EXTRA_FLAGS} ${A.BUILD.EXTRA_FLAGS} ${A.INCLUDES} "${A.SOURCE_FILE}" -o "${A.OBJECT_FILE}"
 environment/project/io.sloeber.core.toolChain.release.1669488660/A.RECIPE.SIZE.PATTERN.1/delimiter=\:
 environment/project/io.sloeber.core.toolChain.release.1669488660/A.RECIPE.SIZE.PATTERN.1/operation=replace
-environment/project/io.sloeber.core.toolChain.release.1669488660/A.RECIPE.SIZE.PATTERN.1/value="/home/gilou/Logiciels/sloeber//arduinoPlugin/packages/arduino/tools/avr-gcc/4.9.2-atmel3.5.4-arduino2/bin/avr-size" -A "/home/gilou/git-repos/windlogger_firmware/Release/windlogger_firmware.elf"
+environment/project/io.sloeber.core.toolChain.release.1669488660/A.RECIPE.SIZE.PATTERN.1/value="/home/gilou/Logiciels/sloeber//arduinoPlugin/packages/arduino/tools/avr-gcc/4.9.2-atmel3.5.4-arduino2/bin/avr-size" -A "/home/gilou/Git/windlogger_firmware/Release/windlogger.elf"
 environment/project/io.sloeber.core.toolChain.release.1669488660/A.RECIPE.SIZE.PATTERN/delimiter=\:
 environment/project/io.sloeber.core.toolChain.release.1669488660/A.RECIPE.SIZE.PATTERN/operation=replace
 environment/project/io.sloeber.core.toolChain.release.1669488660/A.RECIPE.SIZE.PATTERN/value="${A.COMPILER.PATH}${A.COMPILER.SIZE.CMD}" -A "${A.BUILD.PATH}/${A.BUILD.PROJECT_NAME}.elf"
@@ -298,7 +298,7 @@ environment/project/io.sloeber.core.toolChain.release.1669488660/A.RUNTIME.IDE.V
 environment/project/io.sloeber.core.toolChain.release.1669488660/A.RUNTIME.IDE.VERSION/value=10802
 environment/project/io.sloeber.core.toolChain.release.1669488660/A.RUNTIME.PLATFORM.PATH/delimiter=\:
 environment/project/io.sloeber.core.toolChain.release.1669488660/A.RUNTIME.PLATFORM.PATH/operation=replace
-environment/project/io.sloeber.core.toolChain.release.1669488660/A.RUNTIME.PLATFORM.PATH/value=/home/gilou/Arduino/hardware/mighty-1284p/avr
+environment/project/io.sloeber.core.toolChain.release.1669488660/A.RUNTIME.PLATFORM.PATH/value=/home/gilou/Documents/Arduino/hardware/mighty-1284p/avr
 environment/project/io.sloeber.core.toolChain.release.1669488660/A.RUNTIME.REFERENCED.PLATFORM.PATH/delimiter=\:
 environment/project/io.sloeber.core.toolChain.release.1669488660/A.RUNTIME.REFERENCED.PLATFORM.PATH/operation=replace
 environment/project/io.sloeber.core.toolChain.release.1669488660/A.RUNTIME.REFERENCED.PLATFORM.PATH/value=${eclipse_home}/arduinoPlugin/packages/arduino/hardware/avr/1.6.20
@@ -445,7 +445,7 @@ environment/project/io.sloeber.core.toolChain.release.1669488660/JANTJE.ARCHITEC
 environment/project/io.sloeber.core.toolChain.release.1669488660/JANTJE.ARCHITECTURE_ID/value=avr
 environment/project/io.sloeber.core.toolChain.release.1669488660/JANTJE.BOARDS_FILE/delimiter=\:
 environment/project/io.sloeber.core.toolChain.release.1669488660/JANTJE.BOARDS_FILE/operation=replace
-environment/project/io.sloeber.core.toolChain.release.1669488660/JANTJE.BOARDS_FILE/value=/home/gilou/Arduino/hardware/mighty-1284p/avr/boards.txt
+environment/project/io.sloeber.core.toolChain.release.1669488660/JANTJE.BOARDS_FILE/value=/home/gilou/Documents/Arduino/hardware/mighty-1284p/avr/boards.txt
 environment/project/io.sloeber.core.toolChain.release.1669488660/JANTJE.BOARD_ID/delimiter=\:
 environment/project/io.sloeber.core.toolChain.release.1669488660/JANTJE.BOARD_ID/operation=replace
 environment/project/io.sloeber.core.toolChain.release.1669488660/JANTJE.BOARD_ID/value=windlogger
@@ -454,10 +454,10 @@ environment/project/io.sloeber.core.toolChain.release.1669488660/JANTJE.BOARD_NA
 environment/project/io.sloeber.core.toolChain.release.1669488660/JANTJE.BOARD_NAME/value=Windlogger digital Board, 16MHz using Optiboot
 environment/project/io.sloeber.core.toolChain.release.1669488660/JANTJE.COM_PORT/delimiter=\:
 environment/project/io.sloeber.core.toolChain.release.1669488660/JANTJE.COM_PORT/operation=replace
-environment/project/io.sloeber.core.toolChain.release.1669488660/JANTJE.COM_PORT/value=/dev/ttyUSB0
+environment/project/io.sloeber.core.toolChain.release.1669488660/JANTJE.COM_PORT/value=/dev/ttyUSB2
 environment/project/io.sloeber.core.toolChain.release.1669488660/JANTJE.ECLIPSE_LOCATION/delimiter=\:
 environment/project/io.sloeber.core.toolChain.release.1669488660/JANTJE.ECLIPSE_LOCATION/operation=replace
-environment/project/io.sloeber.core.toolChain.release.1669488660/JANTJE.ECLIPSE_LOCATION/value=${eclipse_home}//////////////////////////////////////////////////////////////////////////////////////////
+environment/project/io.sloeber.core.toolChain.release.1669488660/JANTJE.ECLIPSE_LOCATION/value=${eclipse_home}//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 environment/project/io.sloeber.core.toolChain.release.1669488660/JANTJE.EXTRA.ALL/delimiter=\:
 environment/project/io.sloeber.core.toolChain.release.1669488660/JANTJE.EXTRA.ALL/operation=replace
 environment/project/io.sloeber.core.toolChain.release.1669488660/JANTJE.EXTRA.ALL/value=
@@ -493,10 +493,10 @@ environment/project/io.sloeber.core.toolChain.release.1669488660/JANTJE.PACKAGE_
 environment/project/io.sloeber.core.toolChain.release.1669488660/JANTJE.PACKAGE_ID/value=mighty-1284p
 environment/project/io.sloeber.core.toolChain.release.1669488660/JANTJE.PROJECT_NAME/delimiter=\:
 environment/project/io.sloeber.core.toolChain.release.1669488660/JANTJE.PROJECT_NAME/operation=replace
-environment/project/io.sloeber.core.toolChain.release.1669488660/JANTJE.PROJECT_NAME/value=windlogger_firmware
+environment/project/io.sloeber.core.toolChain.release.1669488660/JANTJE.PROJECT_NAME/value=windlogger
 environment/project/io.sloeber.core.toolChain.release.1669488660/JANTJE.SELECTED.PLATFORM/delimiter=\:
 environment/project/io.sloeber.core.toolChain.release.1669488660/JANTJE.SELECTED.PLATFORM/operation=replace
-environment/project/io.sloeber.core.toolChain.release.1669488660/JANTJE.SELECTED.PLATFORM/value=/home/gilou/Arduino/hardware/mighty-1284p/avr
+environment/project/io.sloeber.core.toolChain.release.1669488660/JANTJE.SELECTED.PLATFORM/value=/home/gilou/Documents/Arduino/hardware/mighty-1284p/avr
 environment/project/io.sloeber.core.toolChain.release.1669488660/JANTJE.SIZE.SWITCH/delimiter=\:
 environment/project/io.sloeber.core.toolChain.release.1669488660/JANTJE.SIZE.SWITCH/operation=replace
 environment/project/io.sloeber.core.toolChain.release.1669488660/JANTJE.SIZE.SWITCH/value=${A.RECIPE.SIZE.PATTERN}

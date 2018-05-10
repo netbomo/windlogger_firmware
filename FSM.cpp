@@ -67,6 +67,7 @@ bool FSM::flag_measure = false;					/**< initialize the flag_measure to false */
 /******************************************************************************
  * State machine mechanic methods
  */
+/// todo bug in the FSM, if no anemo, never the averages are calculated... loop around st_measure
 // this method initialize the FSM
 void FSM::init(){
 	m_eeprom_addr = 0;				// data are store from the 0 adress
@@ -80,6 +81,9 @@ void FSM::init(){
 	anemo2.load_param();
 
 	vane.load_param();
+
+	power1.load_param();
+	power2.load_param();
 
 	sd_init = false;
 
@@ -116,6 +120,8 @@ void FSM::menu(){
 	Serial.println("	$3 - Anemo1");
 	Serial.println("	$4 - Anemo2");
 	Serial.println("	$5 - Windvane");
+	Serial.println("	$6 - Power1");
+	Serial.println("	$7 - Power2");
 
 	Serial.println("	$9 - Output configuration");
 }
@@ -124,6 +130,7 @@ void FSM::printConfig(){
 	Serial.println("FSM config stuff :");
 	Serial.print("	*11 measure_sample_conf = ");	Serial.print(measureSampleConf);	Serial.println("		0: no measure,1: 10s average,2:1min average,3:10min average.");
 	Serial.print("	*12 node id = ");	Serial.print(node_id);	Serial.println("		permit identify each datalogger (0 - 255).");
+	Serial.print("	*19 Reset configuration - reinitialize the FSM and each sensors configuration.");
 }
 
 void FSM::printDateTime(){
@@ -165,6 +172,14 @@ bool FSM::config(char *stringConfig){
 			node_id = arg_uc;
 			update_param();
 			break;
+		case 9:	// Reset each param,add here each sensors initialise_param method
+			initialize_param();		// initialize the FSM
+			anemo1.initialize_param();
+			anemo2.initialize_param();
+			vane.initialize_param();
+			power1.initialize_param();
+			power2.initialize_param();
+			break;
 		default:
 			Serial.print("Bad request : ");Serial.println(item);
 	}
@@ -205,7 +220,6 @@ void FSM::configDT(char *stringConfig){
 			break;
 	}
 }
-
 
 void FSM::configOutput(char *stringConfig){
 	uint8_t item = stringConfig[2]-'0';	// convert item in char
@@ -284,6 +298,12 @@ void FSM::st_CONFIG(){
 					case '5':
 						vane.print_config();
 						break;
+					case '6':
+						power1.print_config();
+						break;
+					case '7':
+						power2.print_config();
+						break;
 
 					case '9':
 					printOutput();
@@ -320,6 +340,14 @@ void FSM::st_CONFIG(){
 					case '5':
 						vane.config(serialString);
 						vane.print_config();
+						break;
+					case '6':
+						power1.config(serialString);
+						power1.print_config();
+						break;
+					case '7':
+						power2.config(serialString);
+						power2.print_config();
 						break;
 
 					case '9':
@@ -371,9 +399,12 @@ void FSM::st_MEASURE(){
 #endif
 	digitalWrite(LED_BUILTIN,HIGH);			// led on
 
-	anemo1.start();							// start anemo1 and 2
+	anemo1.start();	// start anemo1 and 2
 
 	vane.read_value(measure);				// read the windvane value
+
+	power1.read_value(measure, 4, 300);		// read power value
+	power2.read_value(measure, 4, 300);
 
 
 	digitalWrite(LED_BUILTIN,LOW);			// led off
@@ -416,6 +447,8 @@ void FSM::st_CALC_AVERAGES(){
 		anemo1.calc_average(measureMax);
 		anemo2.calc_average(measureMax);
 		vane.calc_average(measureMax);
+		power1.calc_average(measureMax);
+		power2.calc_average(measureMax);
 
 		timestamp = rtc.getTimestamp();	// save average's timestamp
 		measure = 0;	// restart a new sequence
@@ -423,6 +456,8 @@ void FSM::st_CALC_AVERAGES(){
 		anemo1.clear(measureMax);
 		anemo2.clear(measureMax);
 		vane.clear(measureMax);
+		power1.clear(measureMax);
+		power2.clear(measureMax);
 	}
 
 	// Transition test ?
@@ -438,28 +473,32 @@ void FSM::st_OUTPUT(){
 	bool isTransmitting = true;
 
 	if(serial_enable==true){
+		char dataString[50];
 
 		// print on Serial (uart 0)
-		Serial.print(timestamp); Serial.print(" ");
-		Serial.print(node_id); Serial.print(" ");
-		Serial.print(anemo1.get_average()); Serial.print(" ");
-		Serial.print(anemo2.get_average()); Serial.print(" ");
+		Serial.print(timestamp); Serial.print("	");
+		Serial.print(node_id); Serial.print("	");
+		Serial.print(anemo1.get_average()); Serial.print("	");
+		Serial.print(anemo2.get_average()); Serial.print("	");
 		Serial.print(vane.get_average());	Serial.print("	");
+		Serial.print(power1.get_average(dataString));	Serial.print("	");
+		Serial.print(power2.get_average(dataString));	Serial.print("	");
 
 		Serial.println();
 	}
 
 	if(sd_enable==true){
 		// todo improve with SD card detection, SD_CD on pin 3
-		char tempString[12];
+		char tempString[50];
 		char dataString[200];
 
 		strcpy(dataString, ltoa(timestamp, tempString, 10)); strcat(dataString,"	");
 		strcat(dataString,itoa(node_id, tempString, 10)); strcat(dataString,"	");
 		strcat(dataString,dtostrf(anemo1.get_average(), 1, 1, tempString)); strcat(dataString,"	");
 		strcat(dataString,dtostrf(anemo2.get_average(), 1, 1, tempString)); strcat(dataString,"	");
-		strcat(dataString,dtostrf(vane.get_average(), 1, 1, tempString)); strcat(dataString,"	");
-
+		strcat(dataString,itoa(vane.get_average(), tempString, 10)); strcat(dataString,"	");
+		strcat(dataString,power1.get_average(tempString)); strcat(dataString,"	");
+		strcat(dataString,power2.get_average(tempString)); strcat(dataString,"	");
 
 		if(sd_init==false){	// if sd is not initialize, do it
 			Serial.print("Initializing SD card...");
@@ -481,10 +520,15 @@ void FSM::st_OUTPUT(){
 
 		if(sd_init==true)	// sd card is initialize, write on
 		{
-			/// todo improve name  is date
+			// set file name from month and day
+			char fileName[13]; char tempConv[6];
+			strcpy(fileName,itoa(rtc.getMonth(),tempConv,10));
+			strcat(fileName,itoa(rtc.getDay(),tempConv,10));
+			strcat(fileName,".txt");
+
 			// open the file. note that only one file can be open at a time,
 			// so you have to close this one before opening another.
-			File dataFile = SD.open("windlog3.txt", FILE_WRITE);
+			File dataFile = SD.open(fileName, FILE_WRITE);
 
 			// if the file is available, write to it:
 			if (dataFile) {

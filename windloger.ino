@@ -1,5 +1,5 @@
 #include "Arduino.h"
-#include "src/FSM.h"
+#include "FSM.h"
 
 //#define DEBUG_MAIN
 
@@ -9,7 +9,7 @@ void setup()
 {
 // Add your initialization code here
 	Serial.begin(9600);
-	Serial.println("Initialization windlogger v0.5.3");
+	Serial.println("Initialization windlogger v0.7.5");
 	pinMode(LED_BUILTIN,OUTPUT);			// initialize the LED_BUILDING as output (pin 13)
 	digitalWrite(LED_BUILTIN,LOW);			// led off
 	fsm.init();
@@ -41,6 +41,7 @@ void loop()
 		   Serial.print("CR");
 #endif
 	     fsm.flag_configRequest = true;
+	     fsm.addChar('\0');
 	     break;
 	   case '\n':					// if it's new line, just do nothing
 		  //

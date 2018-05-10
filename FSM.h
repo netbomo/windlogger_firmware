@@ -40,6 +40,7 @@
 
 #include "Rtc_Pcf8563.h"
 #include "SD.h"
+#include "Power.h"
 
 class FSM;
 
@@ -183,6 +184,8 @@ private:
 	 ******************************************************************************/
 	Rtc_Pcf8563 rtc;					/**< Real Time Clock instance */
 	SDClass sd;
+	Power power1 = Power(1);
+	Power power2 = Power(2);
 
 
 	bool sd_init;
